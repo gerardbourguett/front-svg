@@ -92,8 +92,10 @@ export default function Home() {
     const cx = parseFloat(target.attr("cx"));
     const cy = parseFloat(target.attr("cy"));
     const circleId = target.attr("id");
+    const description = target.attr("data-description");
+    const ip_address = target.attr("data-ip-address");
     if (circleId) {
-      updateCirclePosition(circleId, cx, cy);
+      updateCirclePosition(circleId, cx, cy, description, ip_address);
     }
   };
 
@@ -103,13 +105,24 @@ export default function Home() {
     .on("drag", dragged)
     .on("end", dragended);
 
-  const updateCirclePosition = (circleId: string, cx: number, cy: number) => {
+  const updateCirclePosition = (
+    circleId: string,
+    cx: number,
+    cy: number,
+    description: string,
+    ip_address: string
+  ) => {
     fetch(`http://localhost:4000/api/svg/${circleId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ cx: cx, cy: cy }),
+      body: JSON.stringify({
+        cx: cx,
+        cy: cy,
+        description: description,
+        ip_address: ip_address,
+      }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -131,7 +144,7 @@ export default function Home() {
   const handleModalSubmit = (description: string, ip_address: string) => {
     const { cx, cy } = newCircle;
     const r = 10;
-    const fill = "green";
+    const fill = "blue";
 
     fetch("http://localhost:4000/api/svg", {
       method: "POST",
@@ -192,10 +205,14 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="container">
+    <div className="container mx-auto">
       <div className="py-2">
         Move Mouse Over Shape <span id="txt"></span>
       </div>
+      {/* bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded */}
+      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Ping
+      </button>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         height="700"
@@ -210,7 +227,7 @@ export default function Home() {
           ref={pointsRef}
           fill="none"
           strokeWidth="1"
-          stroke="green"
+          stroke="blue"
         ></g>
       </svg>
       <CreateModal
