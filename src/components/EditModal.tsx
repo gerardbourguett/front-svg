@@ -3,24 +3,36 @@ import React, { useState } from "react";
 interface ModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
-  onSubmit: (description: string, ip_address: string) => void;
+  onSubmit: (
+    circleId: string,
+    description: string,
+    ip_address: string,
+    cx: number,
+    cy: number
+  ) => void;
+  circleId: string;
   cx: number;
   cy: number;
+  initialDescription: string;
+  initialIp_address: string;
 }
 
-const CreateModal: React.FC<ModalProps> = ({
+const EditModal: React.FC<ModalProps> = ({
   isOpen,
   onRequestClose,
   onSubmit,
+  circleId,
   cx,
   cy,
+  initialDescription,
+  initialIp_address,
 }) => {
-  const [description, setDescription] = useState("");
-  const [ipAddress, setIpAddress] = useState("");
+  const [description, setDescription] = useState(initialDescription);
+  const [ip_address, setIpAddress] = useState(initialIp_address);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(description, ipAddress);
+    onSubmit(circleId, description, ip_address, cx, cy);
     setDescription("");
     setIpAddress("");
   };
@@ -32,11 +44,11 @@ const CreateModal: React.FC<ModalProps> = ({
       }`}
     >
       <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/2 p-4 bg-white rounded shadow-md">
-        <h2 className="text-lg font-bold mb-4">Añadir Punto</h2>
+        <h2 className="text-lg font-bold mb-4">Actualizar Punto</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block mb-2 text-sm font-medium">
-              Descripción:
+              Descripción: {initialDescription}
               <input
                 type="text"
                 value={description}
@@ -48,10 +60,10 @@ const CreateModal: React.FC<ModalProps> = ({
           </div>
           <div className="mb-4">
             <label className="block mb-2 text-sm font-medium">
-              Dirección IP:
+              Dirección IP: {initialIp_address}
               <input
                 type="text"
-                value={ipAddress}
+                value={ip_address}
                 onChange={(e) => setIpAddress(e.target.value)}
                 required
                 className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -66,9 +78,9 @@ const CreateModal: React.FC<ModalProps> = ({
           <div className="flex justify-end">
             <button
               type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
             >
-              Add Circle
+              Actualizar
             </button>
             <button
               type="button"
@@ -84,4 +96,4 @@ const CreateModal: React.FC<ModalProps> = ({
   );
 };
 
-export default CreateModal;
+export default EditModal;

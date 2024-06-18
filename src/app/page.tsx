@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import Paths from "./paths";
 import * as d3 from "d3";
 import CreateModal from "@/components/CreateModal";
+import EditModal from "@/components/EditModal";
 
 interface SvgData {
   _id: string;
@@ -18,6 +19,8 @@ interface SvgData {
 export default function Home() {
   const [data, setData] = useState<SvgData[]>([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [editModalIsOpen, setEditModalIsOpen] = useState(false);
+  const [loadButton, setLoadButton] = useState(false);
   const [newCircle, setNewCircle] = useState({
     cx: 0,
     cy: 0,
@@ -25,9 +28,11 @@ export default function Home() {
     ip_address: "",
   });
   const pointsRef = useRef<SVGGElement | null>(null);
+  const [idTemp, setIdTemp] = useState("");
 
   const loadCircles = async () => {
     try {
+      setLoadButton(true);
       const response = await fetch("http://localhost:4000/api/svg");
       const json = await response.json();
       setData(json.svgs);
@@ -126,7 +131,36 @@ export default function Home() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Circle position updated", data);
+        console.log("Circle position updated", data.svg);
+      })
+      .catch((error) => {
+        console.error("Error updating circle position:", error);
+      });
+  };
+
+  const updateDetailsCircle = (
+    circleId: string,
+    cx: number,
+    cy: number,
+    description: string,
+    ip_address: string
+  ) => {
+    fetch(`http://localhost:4000/api/svg/${circleId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        cx: cx,
+        cy: cy,
+        description: description,
+        ip_address: ip_address,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setEditModalIsOpen(false);
+        console.log("Circle data updated", data.svg);
       })
       .catch((error) => {
         console.error("Error updating circle position:", error);
@@ -135,12 +169,24 @@ export default function Home() {
 
   const handleDoubleClick = (event: any) => {
     const coords = d3.pointer(event);
+    const target = d3.select(event.target);
     const x = coords[0];
     const y = coords[1];
-    setNewCircle({ ...newCircle, cx: x, cy: y });
-    setModalIsOpen(true);
+    if (target.node().nodeName === "svg") {
+      setNewCircle({ ...newCircle, cx: x, cy: y });
+      setModalIsOpen(true);
+    } else if (target.node().nodeName === "circle") {
+      setEditModalIsOpen(true);
+      console.log(target.attr);
+      setNewCircle({
+        cx: parseFloat(target.attr("cx")),
+        cy: parseFloat(target.attr("cy")),
+        description: target.attr("description"),
+        ip_address: target.attr("data-ip-address"),
+      });
+      setIdTemp(target.attr("id"));
+    }
   };
-
   const handleModalSubmit = (description: string, ip_address: string) => {
     const { cx, cy } = newCircle;
     const r = 10;
@@ -181,13 +227,13 @@ export default function Home() {
     const svgElement = document.getElementById("svg");
     if (svgElement) {
       svgElement.addEventListener("mousemove", mouseMove);
-      svgElement.addEventListener("dblclick", handleDoubleClick);
+      svgElement.addEventListener("click", handleDoubleClick);
     }
 
     return () => {
       if (svgElement) {
         svgElement.removeEventListener("mousemove", mouseMove);
-        svgElement.removeEventListener("dblclick", handleDoubleClick);
+        svgElement.removeEventListener("click", handleDoubleClick);
       }
     };
   }, []);
@@ -200,18 +246,17 @@ export default function Home() {
     });
   }, [data]);
 
-  useEffect(() => {
-    loadCircles();
-  }, []);
-
   return (
     <div className="container mx-auto">
       <div className="py-2">
         Move Mouse Over Shape <span id="txt"></span>
       </div>
       {/* bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded */}
-      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        Ping
+      <button
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        onClick={loadCircles}
+      >
+        Cargar Pings
       </button>
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -236,6 +281,19 @@ export default function Home() {
         onSubmit={handleModalSubmit}
         cx={newCircle.cx}
         cy={newCircle.cy}
+      />
+
+      <EditModal
+        isOpen={editModalIsOpen}
+        onRequestClose={() => setEditModalIsOpen(false)}
+        onSubmit={(circleId, description, ip_address, cx, cy) => {
+          updateDetailsCircle(circleId, cx, cy, description, ip_address);
+        }}
+        circleId={idTemp}
+        cx={newCircle.cx}
+        cy={newCircle.cy}
+        initialDescription={newCircle.description}
+        initialIp_address={newCircle.ip_address}
       />
     </div>
   );
