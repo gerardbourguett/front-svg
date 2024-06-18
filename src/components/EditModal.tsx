@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 interface ModalProps {
   isOpen: boolean;
@@ -30,11 +30,17 @@ const EditModal: React.FC<ModalProps> = ({
   const [description, setDescription] = useState(initialDescription);
   const [ip_address, setIpAddress] = useState(initialIp_address);
 
+  useEffect(() => {
+    if (isOpen) {
+      setDescription(initialDescription);
+      setIpAddress(initialIp_address);
+    }
+  }, [isOpen, initialDescription, initialIp_address]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(circleId, description, ip_address, cx, cy);
-    setDescription("");
-    setIpAddress("");
+    onRequestClose(); // Cierra el modal después de enviar el formulario
   };
 
   return (
@@ -54,7 +60,7 @@ const EditModal: React.FC<ModalProps> = ({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
-                className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               />
             </label>
           </div>
@@ -66,7 +72,7 @@ const EditModal: React.FC<ModalProps> = ({
                 value={ip_address}
                 onChange={(e) => setIpAddress(e.target.value)}
                 required
-                className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               />
             </label>
           </div>
