@@ -48,7 +48,7 @@ const EditModal: React.FC<ModalProps> = ({
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block mb-2 text-sm font-medium">
-              Descripción: {initialDescription}
+              Descripción:
               <input
                 type="text"
                 value={description}
@@ -60,7 +60,7 @@ const EditModal: React.FC<ModalProps> = ({
           </div>
           <div className="mb-4">
             <label className="block mb-2 text-sm font-medium">
-              Dirección IP: {initialIp_address}
+              Dirección IP:
               <input
                 type="text"
                 value={ip_address}
@@ -87,7 +87,7 @@ const EditModal: React.FC<ModalProps> = ({
               onClick={onRequestClose}
               className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded ml-2"
             >
-              Cancel
+              Cancelar
             </button>
           </div>
         </form>

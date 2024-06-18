@@ -36,7 +36,7 @@ export default function Home() {
       const response = await fetch("http://localhost:4000/api/svg");
       const json = await response.json();
       setData(json.svgs);
-      console.log("Circles loaded", json.svgs);
+      console.log("Circles loaded");
     } catch (error) {
       console.error("Error loading circles:", error);
     }
@@ -131,7 +131,7 @@ export default function Home() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Circle position updated", data.svg);
+        console.log("Circle position updated");
       })
       .catch((error) => {
         console.error("Error updating circle position:", error);
@@ -160,7 +160,7 @@ export default function Home() {
       .then((response) => response.json())
       .then((data) => {
         setEditModalIsOpen(false);
-        console.log("Circle data updated", data.svg);
+        console.log("Circle data updated");
       })
       .catch((error) => {
         console.error("Error updating circle position:", error);
@@ -176,15 +176,14 @@ export default function Home() {
       setNewCircle({ ...newCircle, cx: x, cy: y });
       setModalIsOpen(true);
     } else if (target.node().nodeName === "circle") {
-      setEditModalIsOpen(true);
-      console.log(target.attr);
       setNewCircle({
         cx: parseFloat(target.attr("cx")),
         cy: parseFloat(target.attr("cy")),
-        description: target.attr("description"),
+        description: target.attr("data-description"),
         ip_address: target.attr("data-ip-address"),
       });
       setIdTemp(target.attr("id"));
+      setEditModalIsOpen(true);
     }
   };
   const handleModalSubmit = (description: string, ip_address: string) => {
@@ -215,7 +214,7 @@ export default function Home() {
       })
       .then((data) => {
         addCircle(data._id, cx, cy, r, fill, description, ip_address);
-        console.log("Circle added", data);
+        console.log("Circle added");
         setModalIsOpen(false);
       })
       .catch((error) => {
@@ -249,6 +248,7 @@ export default function Home() {
   return (
     <div className="container mx-auto">
       <div className="py-2">
+        <div className="p-2"></div>
         Move Mouse Over Shape <span id="txt"></span>
       </div>
       {/* bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded */}
