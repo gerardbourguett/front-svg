@@ -1,10 +1,13 @@
+import { toast } from "react-hot-toast";
+
 export const loadCircles = async () => {
   try {
     const response = await fetch("http://localhost:4000/api/svg");
     const json = await response.json();
+    toast.success("¡Puntos cargados!");
     return json.svgs;
   } catch (error) {
-    console.error("Error loading circles:", error);
+    console.error("Error al cargar puntos:", error);
     throw error;
   }
 };
@@ -16,22 +19,34 @@ export const updateCirclePosition = async (
   description: string,
   ip_address: string
 ) => {
+  const updatePromise = fetch(`http://localhost:4000/api/svg/${circleId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      cx,
+      cy,
+      description,
+      ip_address,
+    }),
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error("Error actualizando posición del punto");
+    }
+    return response.json();
+  });
+
+  toast.promise(updatePromise, {
+    loading: "Actualizando posición...",
+    success: "¡Actualización de posición exitosa!",
+    error: "Error al actualizar la posición",
+  });
+
   try {
-    const response = await fetch(`http://localhost:4000/api/svg/${circleId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        cx,
-        cy,
-        description,
-        ip_address,
-      }),
-    });
-    return await response.json();
+    return await updatePromise;
   } catch (error) {
-    console.error("Error updating circle position:", error);
+    console.error("Error al actualizar la posición:", error);
     throw error;
   }
 };
@@ -67,7 +82,7 @@ export const createCircle = async (
 
     return await response.json();
   } catch (error) {
-    console.error("Error adding circle:", error);
+    console.error("Error al agregar punto:", error);
     throw error;
   }
 };
@@ -79,24 +94,29 @@ export const updateCircleDetails = async (
   description: string,
   ip_address: string
 ) => {
-  try {
-    const response = await fetch(`http://localhost:4000/api/svg/${circleId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        cx,
-        cy,
-        description,
-        ip_address,
-      }),
-    });
-    return await response.json();
-  } catch (error) {
-    console.error("Error updating circle details:", error);
-    throw error;
-  }
+  const updatePromise = fetch(`http://localhost:4000/api/svg/${circleId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      cx,
+      cy,
+      description,
+      ip_address,
+    }),
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error("Error actualizando detalles del punto");
+    }
+    return response.json();
+  });
+
+  toast.promise(updatePromise, {
+    loading: "Actualizando detalles...",
+    success: "¡Actualización de detalles exitosa!",
+    error: "Error al actualizar detalles",
+  });
 };
 
 export const deleteCircle = async (circleId: string) => {
@@ -108,11 +128,12 @@ export const deleteCircle = async (circleId: string) => {
       },
     });
     if (!response.ok) {
-      throw new Error(`Failed to delete circle with id: ${circleId}`);
+      throw new Error(`Fallo al eliminar punto con el id: ${circleId}`);
     }
+    toast.success("Punto eliminado exitosamente");
     return await response.json();
   } catch (error) {
-    console.error("Error deleting circle:", error);
+    console.error("Error al eliminar punto:", error);
     throw error;
   }
 };

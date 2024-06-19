@@ -11,6 +11,7 @@ import {
   updateCircleDetails,
   deleteCircle,
 } from "../app/utils/utils";
+import { toast } from "react-hot-toast";
 
 interface SvgData {
   _id: string;
@@ -41,9 +42,9 @@ const Map = () => {
     try {
       const circles = await loadCircles();
       setData(circles);
-      console.log("Circles loaded");
+      console.log("Puntos cargados");
     } catch (error) {
-      console.error("Error loading circles:", error);
+      console.error("Error loading points:", error);
     }
   };
 
@@ -138,9 +139,10 @@ const Map = () => {
     try {
       const data = await createCircle(cx, cy, description, ip_address);
       addCircle(data._id, cx, cy, 10, "blue", description, ip_address);
-      console.log("Circle added");
+      toast.success("Punto añadido");
       setModalIsOpen(false);
     } catch (error) {
+      toast.error("Error al agregar punto");
       console.error("Error adding circle:", error);
     }
   };
@@ -161,8 +163,9 @@ const Map = () => {
           : circle
       );
       setData(updatedData);
-      console.log("Circle data updated");
+      toast.success("Actualización exitosa");
     } catch (error) {
+      toast.error("Error al actualizar detalles");
       console.error("Error updating circle details:", error);
     }
   };
@@ -200,7 +203,7 @@ const Map = () => {
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         onClick={handleLoadCircles}
       >
-        Cargar Pings
+        Cargar Puntos
       </button>
       <svg
         xmlns="http://www.w3.org/2000/svg"

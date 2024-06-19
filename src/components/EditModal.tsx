@@ -1,3 +1,4 @@
+import { deleteCircle } from "@/app/utils/utils";
 import React, { useState, useEffect } from "react";
 
 interface ModalProps {
@@ -81,20 +82,32 @@ const EditModal: React.FC<ModalProps> = ({
               Coordenadas: x: {cx}, y: {cy}
             </p>
           </div>
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Actualizar
-            </button>
+          <div className="flex justify-between">
             <button
               type="button"
-              onClick={onRequestClose}
-              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded ml-2"
+              onClick={() => {
+                deleteCircle(circleId);
+                onRequestClose();
+              }}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
             >
-              Cancelar
+              Eliminar
             </button>
+            <div className="flex space-x-2">
+              <button
+                type="submit"
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Actualizar
+              </button>
+              <button
+                type="button"
+                onClick={onRequestClose}
+                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
         </form>
       </div>
