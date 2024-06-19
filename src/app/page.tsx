@@ -4,9 +4,9 @@ import React from "react";
 
 const Home = () => {
   return (
-    <div>
+    <main>
       <Map />
-    </div>
+    </main>
   );
 };
 
